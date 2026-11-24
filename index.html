@@ -1102,6 +1102,18 @@
 
       state.orders.unshift(orderRecord);
       saveOrders();
+      const GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxPjUF9hrMxkLZ3PJKbAnBqzL6P5gn9S0tcVstrNWOPN72qDf-bgOpPbaspeWgMW8kN/exec';
+
+      fetch(GOOGLE_SHEET_WEBHOOK, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          ...orderRecord,
+          itemsText: itemsCopy.map(i => `${i.name} x${i.qty} (${i.price * i.qty} FCFA)`).join(' | ')
+        })
+      }).catch(err => console.error('Erreur envoi Google Sheets :', err));
+      
       clearCart();
       $('checkoutForm').reset();
       closeCart();
